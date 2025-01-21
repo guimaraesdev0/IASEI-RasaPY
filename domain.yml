@@ -1,0 +1,50 @@
+version: "3.1"
+
+intents:
+  - saudacao
+  - consultar_processos
+  - consultar_documento
+  - pesquisar_procesos_interessados
+  - pesquisar_documentos_interessados
+
+entities:
+  - tipo_processo
+  - data
+  - numeroprocesso
+  - nome_razaosocial
+  - custom_entity
+  - triggered_intent
+
+actions:
+  - action_set_entity_from_prompt
+  - action_search_supabase
+
+slots:
+  consulta_processo:
+    type: list
+    influence_conversation: false
+    mappings:
+    - type: from_entity
+      entity: numeroprocesso
+  extracted_parameters:
+      type: any
+      influence_conversation: false
+      mappings:
+      - type: from_text
+
+responses:
+  utter_saudacao:
+  - text: "Olá, como posso te ajudar? "
+
+  utter_parametros:
+  - text: "Parametros extraidos {extracted_parameters}"
+
+  utter_realizandoconsulta:
+  - text: "Realizando a consulta, aguarde um momento..."
+
+  utter_BuscartodosDocumentos:
+  - text: "Buscando todos os documentos..."
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
