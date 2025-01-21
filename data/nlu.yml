@@ -1,0 +1,67 @@
+version: "3.1"
+
+nlu:
+
+
+- regex: numeroprocesso
+  examples: |
+   - \d{5}\.\d{6}/\d{4}-\d{2}
+
+- regex: data
+  examples: |
+    - \d{4}-\d{4}               
+    
+- intent: saudacao
+  examples: |
+    - oi
+    - ola
+    - Olá
+    - Olá pode me ajudar
+    - Hello
+    - Boa tarde
+    - Boa noite
+    - Bom dia
+
+- intent: consultar_processos
+  examples: |
+    - Preciso de processos envolvendo a [Mineradora](nome_razaosocial)
+    - Busque todos os processos que envolvem [Empresa](nome_razaosocial)
+    - Quais processos envolvem [Joao](nome_razaosocial)
+    - Pesquise todos os processos envolvendo o [Joao](nome_razaosocial)
+    - Pesquise todos os processos envolvendo a [Maria](nome_razaosocial)
+    - Me traga todos os processos do dia [1/5/2020](data)
+    - Retorne todos os processos do ano [5/10/2020](data) e [10/01/2001]
+    - Pesquise todos os processos que ocorreram entre [5/10/2020](data) e [10/01/2001]
+    - Consulte todos os processos que ocorreram nas datas de [5/10/2020](data) e [10/01/2001]
+    - Me traga todos os processos do tipo [Gestão de Títulos: Autorização de Pesquisa](tipo_processo)
+    - Liste todos os processos envolvendo o [Lucas](nome_razaosocial) que sejam do tipo [Demanda Externa: Outros Orgãos Externos](tipo_processo)
+
+- intent: consultar_documento
+  examples: |
+    - Busque todos os documentos do processo [48077.803153/2024-20](numeroprocesso)
+    - Busque todos os documentos do processo [48077.803153/2024-20] que ocorreram no dia [16/10/2000](data)
+    - retorne todos os documentos que ocorreram nos anos de [2010-2020](data)
+    - retorne todos os documentos que ocorreram nos anos de [2000 e 2010](data)
+    - detalhe o número [5]
+    - detalhe o numero [10]
+    - detalhe o processo 10
+    - retorne todos os documentos de número 10
+
+
+- intent: pesquisar_procesos_interessados
+  examples: |
+    - Busque todos processos envolvendo o [Mineradora XYZ](nome_razaosocial)
+    - Busque todos os processos envolvendo a [Empresa XYZ] (nome_razaosocial)
+    - pesquise todos os processos do advogado [João](nome_razaosocial)
+    - faça uma busca de processos os documentos com os interessados [Empresa XYZ](nome_razaosocial)
+    - faça uma busca de processos os documentos com os interessados [Pessoa xyz](nome_razaosocial)
+
+
+- intent: pesquisar_documentos_interessados
+  examples: |
+    - Busque todos documentos envolvendo o [Mineradora XYZ](nome_razaosocial)
+    - Busque todos os documentos envolvendo a [Empresa XYZ] (nome_razaosocial)
+    - pesquise todos os documentos do advogado [João](nome_razaosocial)
+    - pesquise todos os documentos da advogada [Maria](nome_razaosocial)
+    - faça uma busca de todos os documentos com os interessados [Empresa XYZ](nome_razaosocial)
+    - faça uma busca de todos os documentos com os interessados [Pessoa xyz](nome_razaosocial)

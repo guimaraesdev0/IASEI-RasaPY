@@ -1,0 +1,37 @@
+version: "3.1"
+
+stories:
+
+- story: saudacao
+  steps:
+  - intent: saudacao
+  - action: action_set_entity_from_prompt
+  - action: utter_saudacao
+
+- story: consultar_processos
+  steps:
+  - intent: consultar_processos
+  - action: action_set_entity_from_prompt
+  - action: utter_BuscartodosDocumentos
+  - action: action_search_supabase
+
+- story: consultar_documento
+  steps:
+  - intent: consultar_documento
+  - action: action_set_entity_from_prompt
+  - action: utter_BuscartodosDocumentos
+  - action: action_search_supabase
+
+- story: pesquisar_procesos_interessados
+  steps:
+  - intent: pesquisar_procesos_interessados
+  - action: action_set_entity_from_prompt
+  - action: utter_BuscartodosDocumentos
+  - action: action_search_supabase
+
+- story: pesquisar_documentos_interessados
+  steps:
+  - intent: pesquisar_documentos_interessados
+  - action: action_set_entity_from_prompt
+  - action: utter_BuscartodosDocumentos
+  - action: action_search_supabase
