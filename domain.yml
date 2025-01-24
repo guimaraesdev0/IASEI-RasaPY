@@ -6,6 +6,8 @@ intents:
   - consultar_documento
   - pesquisar_procesos_interessados
   - pesquisar_documentos_interessados
+  - follow_up_query
+  - consultar_documento_especifico
 
 entities:
   - tipo_processo
@@ -14,6 +16,7 @@ entities:
   - nome_razaosocial
   - custom_entity
   - triggered_intent
+  - numerodocumento
 
 actions:
   - action_set_entity_from_prompt
@@ -29,8 +32,11 @@ slots:
   extracted_parameters:
       type: any
       influence_conversation: false
-      mappings:
-      - type: from_text
+      mappings: []
+  last_bot_response:
+    type: text
+    influence_conversation: true
+    mappings: []
 
 responses:
   utter_saudacao:
@@ -44,6 +50,18 @@ responses:
 
   utter_BuscartodosDocumentos:
   - text: "Buscando todos os documentos..."
+
+  utter_null:
+  - text: "Nulo ativado {last_bot_response}"
+
+  utter_notnull:
+  - text: "Nulo desativado {last_bot_response}"
+
+  utter_nocontext:
+  - text: "Não entendi a sua solicitação, poderia reformular?"
+
+  utter_default:
+  - text: "Desculpa, não consegui entender a sua pergunta, poderia reformular?"
 
 session_config:
   session_expiration_time: 60
