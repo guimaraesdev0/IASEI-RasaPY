@@ -14,11 +14,12 @@ SUPABASE_URL = "https://oixmmanzunrtyymwhqny.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9peG1tYW56dW5ydHl5bXdocW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU5NzY2MjksImV4cCI6MjA0MTU1MjYyOX0.XU5foyzWGynnisYtoSbe_IlVrD50OmWHp5GiWDd5d1g"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+
 # Modelo de embeddings
 embeddings = SentenceTransformer("paraphrase-mpnet-base-v2")
 
 class SetEntityFromPrompt(Action):
-    GROQ_API_KEY = "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"
+    GROQ_API_KEY = "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"
     GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
     def name(self) -> Text:
@@ -29,7 +30,7 @@ class SetEntityFromPrompt(Action):
             "Authorization": f"Bearer {self.GROQ_API_KEY}",
             "Content-Type": "application/json"
         }
-
+        
         messages = [
             {
                 "role": "system",
@@ -38,6 +39,14 @@ class SetEntityFromPrompt(Action):
                     "representing only the extracted parameters from the user's input. You must respond exclusively with the JSON, without explanations, messages, or any additional content. "
                     "Your purpose is to extract essential parameters for querying a legal case database.\n\n"
                     "You must identify and extract the following parameters:\n"
+                    "YOU SHOULD NEVER CREATE A NEW PARAMETER, JUST EXTRACT FROM THE PROMPT OR THE CONTEXT PROVIDED BY THE USER, NEVER INVENT MORE PARAMETERS"
+                    "If the intent is not defined in the user prompt, set an intent as per the user's request"
+                    "1. `filtrar_processos`: To request a list of cases based on specified parameters, such as date range or related parties.\n"
+                    "   Example: 'Liste todos os processos que ocorreram em 2020-2021 envolvendo a Fire Metals LTDA e Pessoa 2.'\n"
+                    "2. `filtrar_documentos`: To request documents related to specific cases.\n"
+                    "   Example: 'Me traga os documentos envolvendo o processo 48408.880078/2017-01 e 48408.880100/2018-95.'\n"
+                    "3. `consultar_documento_especifico`: To request documents related to specific cases.\n"
+                    "   Example: 'Detalhe o documento número 3066009'\n"                    
                     "- `nome_ou_razao_social`: Names of the persons or companies mentioned in the input (if applicable).\n"
                     "- `data_inicial` and `data_final`: Start and end dates for date-based queries (if applicable).\n"
                     "- `processos_identificados`: A list of case numbers matching the pattern '\\b\\d{5}\\.\\d{6}/\\d{4}-\\d{2}\\b' found in the user's input.\n"
@@ -45,12 +54,18 @@ class SetEntityFromPrompt(Action):
                     "- `tipoDocumento`: A list of document types the user wants to filter by (if applicable).\n"
                     "- `tipoProcesso`: A list of case types the user wants to filter by (if applicable).\n"
                     "- `tipo_intencao`: The name of the intent as identified by the system.\n\n"
+                    "- `documentos_indentificados`: A list containing document identification numbers Exemple: 1630682"
+                    "Additionally, if the context provided in the previous AI message contains relevant information, you must also extract parameters based on that context.\n\n"
                     "Example Input: 'List all cases related to Company A between 2020 and 2021.'\n"
-                    "Example Output: {\"parameters\": {\"tipo_intencao\": \"consultar_documento\", \"nome_ou_razao_social\": [\"Company A\"], \"data_inicial\": \"2020-01-01\", \"data_final\": \"2021-12-31\", \"processos_identificados\": [], \"max_resultados\": null, \"tipoDocumento\": [], \"tipoProcesso\": []}}."
+                    "Example Output: {\"parameters\": {\"tipo_intencao\": \"consultar_documento\", \"nome_ou_razao_social\": [\"Company A\"], \"data_inicial\": \"2020-01-01\", \"data_final\": \"2021-12-31\", \"processos_identificados\": [], \"documentos_identificados\": [], \"max_resultados\": null, \"tipoDocumento\": [], \"tipoProcesso\": []}}."
                 ),
             },
-            {"role": "user", "content": f"Last bot message: {last_bot_message}, User prompt: {prompt}, tipo_intencao: {intent}"}
+            {
+                "role": "user",
+                "content": f"Context: {last_bot_message}, User prompt: {prompt}, Intent: {intent}"
+            }
         ]
+
 
         data = {
             "model": model,
@@ -64,6 +79,7 @@ class SetEntityFromPrompt(Action):
             try:
                 raw_content = response.json()["choices"][0]["message"]["content"].strip()
                 intent_response = json.loads(raw_content)
+                print(intent_response)
                 return intent_response
             except (KeyError, json.JSONDecodeError) as e:
                 print(f"Erro ao processar a resposta: {e}")
@@ -95,6 +111,7 @@ class SetEntityFromPrompt(Action):
         # Chama a função para obter os parâmetros com o tipo de intenção
         api_response = self.choose_intent(prompt, triggered_intent, last_bot_message)
         
+        
         if api_response:
             # Inclui o tipo da intenção identificado pelo Rasa no JSON final
             parameters = api_response.get("parameters", {})
@@ -110,8 +127,12 @@ class SetEntityFromPrompt(Action):
 
 
 class ActionSearchSupabase(Action):
-    GROQ_API_KEY = "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"
+    GROQ_API_KEY = "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"
     GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+    def set_last_bot_message(response):
+        slot_events = [SlotSet("last_bot_response", response)]
+        return slot_events        
+    
     def generate_answer(self, query, response_data, intent):
         context = ""
         if intent == "consultar_processos" or intent == "pesquisar_procesos_interessados":
@@ -146,23 +167,30 @@ class ActionSearchSupabase(Action):
             {
                 "role": "system",
                 "content": (
-                    "You are an artificial intelligence assistant developed by SansCode. Your role is to receive and analyze queries related to mining processes from the SEI "
-                    "(Sistema Eletrônico de Informações) of the National Mining Agency (ANM). Users will ask questions in Portuguese, and you must respond in Portuguese. "
-                    "Your objective is to help organize and structure database queries so users can find relevant mining process information from the SEI ANM system. "
-                    "Always ensure your responses are detailed, structured, and focused on guiding the user to relevant data efficiently. "
-                    "When listing results from the database, never display more than 10 objects. If there are more than 10 objects, inform the user that the list was truncated due to the size of the query. "
-                    "However, provide statistics and observations about the data, such as total results found, distribution by category, or other useful metrics. "
-                    "Encourage users to refine their queries with process numbers, date ranges, or other relevant filters for more precise results."
+                    "You are an AI assistant developed by SansCode, specializing in queries related to mining processes from the SEI "
+                    "(Sistema Eletrônico de Informações) of the National Mining Agency (ANM). Your primary goal is to assist users in accessing, organizing, "
+                    "and structuring relevant information about mining processes. Users will ask questions in Portuguese, and you must always respond clearly, "
+                    "in detail, and in Portuguese."
+                    "Adapt your responses to the user's query context and the type of data provided, ensuring that your answers are meaningful and structured. "
+                    "When listing results, only display up to 10 relevant objects **if it makes sense for the user’s query**. If the query is more general or interpretive, "
+                    "focus on providing a summary or analysis that adds value to the search, avoiding unnecessary lists. If there are more than 10 objects, mention the total "
+                    "number of results found and suggest refining the query with filters such as process numbers, dates, or interested parties for greater precision."
+                    "When responding, highlight useful observations, such as patterns found in the data (e.g., distribution by category, dates, or frequency of occurrences), "
+                    "and present the information in MarkDown format for better organization and readability. Avoid using text sizes like `#` or `##`, but use lists, tables, and "
+                    "line breaks to structure the information clearly and accessibly."
+                    "Remember: your priority is to provide a relevant response to what the user asked. Analyze the context before listing objects or making observations, and do not "
+                    "list items unless the question clearly justifies doing so."
                 )
             },
             {
                 "role": "user",
                 "content": (
-                    f"Context:\n{context_chunk}\nQuestion: {query}. You are dealing with documents. Always respond with ALL the information you receive, but apply the limit of 10 objects when listing. "
-                    "Make sure to include relevant observations or statistics about the queried data. Format responses in Markdown."
+                    f"Context:\n{context_chunk}\nQuestion: {query}. Be direct and organize the information in MarkDown, but use lists or tables only if necessary and relevant "
+                    "to the query. Focus on addressing the user’s actual need with precise and clear answers."
                 )
             }
         ]
+
 
 
         data = {
@@ -174,9 +202,10 @@ class ActionSearchSupabase(Action):
         response = requests.post(self.GROQ_API_URL, headers=headers, json=data)
 
         if response.status_code == 200:
-            return response.json()['choices'][0]['message']['content'].strip()
+            formatted_response = response.json()['choices'][0]['message']['content']
+            return formatted_response.replace("\n", "/n/n")
         else:
-            return "Desculpe, não foi possível gerar uma resposta no momento."
+            return f"Desculpe, não foi possível gerar uma resposta no momento. {response}"
 
     def name(self) -> Text:
         return "action_search_supabase"
@@ -208,13 +237,15 @@ class ActionSearchSupabase(Action):
         process_numbers = parameters.get("processos_identificados", [])
         tipo_processo = parameters.get("tipoProcesso", [])
         tipo_documento = parameters.get("tipoDocumento", [])
+        documentos_identificados = parameters.get("documentos_identificados", [])
         data_inicial = parameters.get("data_inicial", None)
         data_final = parameters.get("data_final", None)
         interessados = parameters.get("nome_ou_razao_social", [])
         max_resultados = parameters.get("max_resultados", 100)
 
         # Define a intenção que acionou a ação
-        intent = tracker.latest_message.get("intent", {}).get("name")
+        intent = parameters.get("tipo_intencao", None)
+        """ intent = tracker.latest_message.get("intent", {}).get("name") """
 
         # Mapeia a função RPC com base na intenção
         rpc_function = None
@@ -242,6 +273,17 @@ class ActionSearchSupabase(Action):
                 "tipo_documento": tipo_documento if tipo_documento else None,  # Lista vazia
                 "tipo_processo": tipo_processo if tipo_processo else None,  # Lista vazia
             }
+        elif intent == "consultar_documento_especifico":
+            rpc_function = "pesquisa_documentos"
+            params = {
+                "data_inicial": data_inicial if data_inicial else None,
+                "data_final": data_final if data_final else None,
+                "max_resultados": max_resultados if max_resultados else 10,  # Valor padrão
+                "interessados_param": interessados if interessados else None,  # Lista vazia
+                "documentos_identificados": documentos_identificados if documentos_identificados else None,  # Lista vazia
+                "tipo_documento": tipo_documento if tipo_documento else None,  # Lista vazia
+                "tipo_processo": tipo_processo if tipo_processo else None,  # Lista vazia
+            }
         else:
             dispatcher.utter_message(text=f"Intenção '{intent}' não é suportada para esta ação.")
             return []
@@ -249,10 +291,13 @@ class ActionSearchSupabase(Action):
         # Chama a função RPC com os parâmetros preparados
         try:
             response = supabase.rpc(rpc_function, params).execute()
-            
+            print(response.data)
             
             ia_response = self.generate_answer(query_text, response.data, intent)
+            
             dispatcher.utter_message(ia_response)
+                        
+            return [SlotSet("last_bot_response", ia_response)]
 
             if not response.data:
                 dispatcher.utter_message(text="Nenhum resultado foi encontrado para a sua consulta.")

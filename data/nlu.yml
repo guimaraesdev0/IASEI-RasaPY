@@ -21,6 +21,14 @@ nlu:
     - Boa tarde
     - Boa noite
     - Bom dia
+    - Como vai?
+    - Ei, pode falar comigo?
+    - Tudo bem?
+    - Preciso de ajuda, olá!
+  
+- intent: agradecimento
+  examples: |
+  
 
 - intent: consultar_processos
   examples: |
@@ -35,33 +43,93 @@ nlu:
     - Consulte todos os processos que ocorreram nas datas de [5/10/2020](data) e [10/01/2001]
     - Me traga todos os processos do tipo [Gestão de Títulos: Autorização de Pesquisa](tipo_processo)
     - Liste todos os processos envolvendo o [Lucas](nome_razaosocial) que sejam do tipo [Demanda Externa: Outros Orgãos Externos](tipo_processo)
+    - Pesquise todos os processos que ocorreram no ano de 2019
+    - Todos os processos cadastrados em [2020](data)
+    - Quero informações sobre os processos entre [15/01/2019](data) e [15/01/2020](data)
+    - Quais processos foram arquivados em [2022](data)?
+    - Liste os processos de [Empresa X](nome_razaosocial)
+    - Procure processos registrados no mês de [Março de 2023](data)
+    - Me traga os processos mais recentes de [Empresa ABC](nome_razaosocial)
 
-- intent: consultar_documento
-  examples: |
-    - Busque todos os documentos do processo [48077.803153/2024-20](numeroprocesso)
-    - Busque todos os documentos do processo [48077.803153/2024-20] que ocorreram no dia [16/10/2000](data)
-    - retorne todos os documentos que ocorreram nos anos de [2010-2020](data)
-    - retorne todos os documentos que ocorreram nos anos de [2000 e 2010](data)
-    - detalhe o número [5]
-    - detalhe o numero [10]
-    - detalhe o processo 10
-    - retorne todos os documentos de número 10
-
-
-- intent: pesquisar_procesos_interessados
-  examples: |
-    - Busque todos processos envolvendo o [Mineradora XYZ](nome_razaosocial)
-    - Busque todos os processos envolvendo a [Empresa XYZ] (nome_razaosocial)
-    - pesquise todos os processos do advogado [João](nome_razaosocial)
-    - faça uma busca de processos os documentos com os interessados [Empresa XYZ](nome_razaosocial)
-    - faça uma busca de processos os documentos com os interessados [Pessoa xyz](nome_razaosocial)
 
 
 - intent: pesquisar_documentos_interessados
   examples: |
     - Busque todos documentos envolvendo o [Mineradora XYZ](nome_razaosocial)
-    - Busque todos os documentos envolvendo a [Empresa XYZ] (nome_razaosocial)
-    - pesquise todos os documentos do advogado [João](nome_razaosocial)
-    - pesquise todos os documentos da advogada [Maria](nome_razaosocial)
-    - faça uma busca de todos os documentos com os interessados [Empresa XYZ](nome_razaosocial)
-    - faça uma busca de todos os documentos com os interessados [Pessoa xyz](nome_razaosocial)
+    - Busque todos os documentos envolvendo a [Empresa XYZ](nome_razaosocial)
+    - Pesquise todos os documentos do advogado [João](nome_razaosocial)
+    - Pesquise todos os documentos da advogada [Maria](nome_razaosocial)
+    - Faça uma busca de todos os documentos com os interessados [Empresa XYZ](nome_razaosocial)
+    - Faça uma busca de todos os documentos com os interessados [Pessoa XYZ](nome_razaosocial)
+    - Quais documentos da [Empresa ABC](nome_razaosocial) estão disponíveis?
+    - Mostre os documentos do advogado [Carlos Silva](nome_razaosocial)
+    - Existe algum documento arquivado por [Companhia Alpha](nome_razaosocial)?
+    - Liste documentos do interessado [Joana Pereira](nome_razaosocial)
+
+- intent: follow_up_query
+  examples: |
+    - Detalhe o processo 3
+    - Detalhe o terceiro processo
+    - Detalhe o segundo processo
+    - Quero saber mais sobre isso
+    - E o segundo item?
+    - O que significa isso?
+    - Me diga mais sobre esse processo
+    - Quais detalhes você tem sobre esse item?
+    - Explique melhor o que é o processo 2
+    - Me traga informações adicionais
+    - Pode detalhar isso?
+    - E o último item da lista?
+    - Como assim o primeiro processo?
+    - Detalhe o processo  27201.810090/1991-04
+    - Detalhe o primeiro processo
+    - Detalhe o documento do processo 27201.810090/1991-04
+
+- intent: consultar_documento
+  examples: |
+    - Busque todos os documentos do processo [48077.803153/2024-20](numeroprocesso)
+    - Busque todos os documentos do processo [48077.803153/2024-20] que ocorreram no dia [16/10/2000](data)
+    - Retorne todos os documentos que ocorreram nos anos de [2010-2020](data)
+    - Retorne todos os documentos que ocorreram nos anos de [2000 e 2010](data)
+    - Liste os documentos do processo [48077.803153/2024-20](numeroprocesso)
+    - Preciso de todos os documentos do processo [12345.678910/2021-09](numeroprocesso)
+    - Quais documentos foram adicionados em [25/12/2020](data)?
+    - Me traga os documentos do processo [78910.111213/2023-15](numeroprocesso)
+    - Liste todos os documentos anexados entre [01/01/2021](data) e [01/01/2022](data)
+    - Busque documentos do tipo [Parecer Técnico](tipo_documento) no processo [48077.803153/2024-20](numeroprocesso)
+
+- intent: consultar_documento_especifico
+  examples: |
+    - Quero saber mais sobre o documento número [3066009](numerodocumento)
+    - Detalhe o documento número [3066009](numerodocumento)
+    - Quem assinou o documento [3066009](numerodocumento)?
+    - Retorne o conteúdo do documento [3066009](numerodocumento)
+    - Resuma o documento número [3066009](numerodocumento)
+    - Explique o documento [3066009](numerodocumento)
+    - Me dê os detalhes do documento [3066009](numerodocumento)
+    - Quais informações estão no documento [3066009](numerodocumento)?
+    - Posso ter um resumo do documento [3066009](numerodocumento)?
+    - Quem está associado ao documento [3066009](numerodocumento)?
+    - O que está escrito no documento [3066009](numerodocumento)?
+    - Liste as partes principais do documento [3066009](numerodocumento)
+    - O que consta no documento [3066009](numerodocumento)?
+    - Preciso saber quem elaborou o documento [3066009](numerodocumento)
+    - Há informações sobre o conteúdo do documento [3066009](numerodocumento)?
+    - Explique o que contém o documento número [3066009](numerodocumento)
+    - Me mostre os dados do documento [3066009](numerodocumento)
+    - Qual é o assunto principal do documento [3066009](numerodocumento)?
+    - Diga quem aprovou o documento [3066009](numerodocumento)
+    - Existe um resumo do documento número [3066009](numerodocumento)?
+
+- intent: pesquisar_procesos_interessados
+  examples: |
+    - Busque todos processos envolvendo o [Mineradora XYZ](nome_razaosocial)
+    - Busque todos os processos envolvendo a [Empresa XYZ](nome_razaosocial)
+    - Pesquise todos os processos do advogado [João](nome_razaosocial)
+    - Faça uma busca de processos e documentos com os interessados [Empresa XYZ](nome_razaosocial)
+    - Faça uma busca de processos e documentos com os interessados [Pessoa XYZ](nome_razaosocial)
+    - Liste processos que envolvem [Maria](nome_razaosocial)
+    - Quero todos os processos relacionados à [Companhia ABC](nome_razaosocial)
+    - Pesquise os processos com o advogado [Carlos Silva](nome_razaosocial)
+    - Mostre processos da [Indústria Mineradora](nome_razaosocial)
+    - Há processos em nome da [Empresa Zeta](nome_razaosocial)?

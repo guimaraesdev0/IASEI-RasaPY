@@ -19,7 +19,7 @@ stories:
   steps:
   - intent: consultar_documento
   - action: action_set_entity_from_prompt
-  - action: utter_BuscartodosDocumentos
+  - action: utter_BuscartodosDocumentos 
   - action: action_search_supabase
 
 - story: pesquisar_procesos_interessados
@@ -34,4 +34,15 @@ stories:
   - intent: pesquisar_documentos_interessados
   - action: action_set_entity_from_prompt
   - action: utter_BuscartodosDocumentos
+  - action: action_search_supabase
+
+- story: follow_up_query
+  steps:
+  - action: action_set_entity_from_prompt
+  - action: action_search_supabase
+
+- story: consultar_documento_especifico
+  steps: 
+  - intent: consultar_documento_especifico
+  - action: action_set_entity_from_prompt
   - action: action_search_supabase
