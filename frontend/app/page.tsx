@@ -25,7 +25,7 @@ export default function Chat() {
   const [isOnline, setIsOnline] = useState(false)
 
   useEffect(() => {
-    const socketConnection = io("http://156.67.27.152:5005")
+    const socketConnection = io("https://iaseibackend.duckdns.org")
     setSocket(socketConnection)
 
     socketConnection.on("connect", () => {
