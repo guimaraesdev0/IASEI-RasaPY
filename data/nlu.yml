@@ -2,19 +2,20 @@ version: "3.1"
 
 nlu:
 
-
 - regex: numeroprocesso
   examples: |
-   - \d{5}\.\d{6}/\d{4}-\d{2}
+    - \d{5}\.\d{6}/\d{4}-\d{2}
 
 - regex: data
   examples: |
-    - \d{4}-\d{4}               
-    
+    - \d{4}-\d{4}
+
 - intent: saudacao
   examples: |
     - oi
     - ola
+    - teste
+    - Teste
     - Olá
     - Olá pode me ajudar
     - Hello
@@ -25,79 +26,137 @@ nlu:
     - Ei, pode falar comigo?
     - Tudo bem?
     - Preciso de ajuda, olá!
-  
+
 - intent: agradecimento
   examples: |
-  
 
 - intent: consultar_processos
   examples: |
-    - Preciso de processos envolvendo a [Mineradora](nome_razaosocial)
-    - Busque todos os processos que envolvem [Empresa](nome_razaosocial)
-    - Quais processos envolvem [Joao](nome_razaosocial)
-    - Pesquise todos os processos envolvendo o [Joao](nome_razaosocial)
-    - Pesquise todos os processos envolvendo a [Maria](nome_razaosocial)
     - Me traga todos os processos do dia [1/5/2020](data)
-    - Retorne todos os processos do ano [5/10/2020](data) e [10/01/2001]
-    - Pesquise todos os processos que ocorreram entre [5/10/2020](data) e [10/01/2001]
-    - Consulte todos os processos que ocorreram nas datas de [5/10/2020](data) e [10/01/2001]
+    - Retorne todos os processos do ano [5/10/2020](data) e [10/01/2001](data)
+    - Pesquise todos os processos que ocorreram entre [5/10/2020](data) e [10/01/2001](data)
+    - Consulte todos os processos que ocorreram nas datas de [5/10/2020](data) e [10/01/2001](data)
     - Me traga todos os processos do tipo [Gestão de Títulos: Autorização de Pesquisa](tipo_processo)
-    - Liste todos os processos envolvendo o [Lucas](nome_razaosocial) que sejam do tipo [Demanda Externa: Outros Orgãos Externos](tipo_processo)
-    - Pesquise todos os processos que ocorreram no ano de 2019
+    - Liste todos os processos que sejam do tipo [Demanda Externa: Outros Orgãos Externos](tipo_processo)
+    - Pesquise todos os processos que ocorreram no ano de [2019](data)
     - Todos os processos cadastrados em [2020](data)
     - Quero informações sobre os processos entre [15/01/2019](data) e [15/01/2020](data)
     - Quais processos foram arquivados em [2022](data)?
-    - Liste os processos de [Empresa X](nome_razaosocial)
     - Procure processos registrados no mês de [Março de 2023](data)
-    - Me traga os processos mais recentes de [Empresa ABC](nome_razaosocial)
-
+    - Quero saber os processos que aconteceram no período de [01/01/2020](data) a [31/12/2020](data)
+    - Quais são os processos de [Fevereiro de 2021](data)?
+    - Todos os processos do tipo [Fiscalização Administrativa](tipo_processo)
+    - Liste os processos criados entre [05/07/2021](data) e [10/08/2021](data)
+    - Me mostre processos arquivados em [Janeiro de 2022](data)
+    - Filtre processos do tipo [Revisão de Cadastro: Cadastro de Ativos](tipo_processo)
+    - Busque os processos registrados entre [10/06/2020](data) e [20/06/2020](data)
+    - Quero ver processos do tipo [Autorização de Atividade: Licença Temporária](tipo_processo)
+    - Me traga processos do tipo [Gestão Financeira: Cobranças Diversas](tipo_processo)
+    - Pesquise processos registrados na data de [25/12/2021](data)
+    - Quais processos foram abertos em [2023](data)?
+    - Preciso dos processos registrados no dia [10 de janeiro de 2020](data)
+    - Quero ver os processos do mês de [Agosto de 2022](data)
+    - Busque todos os processos entre [1/1/2021](data) e [31/12/2021](data)
+    - Quais foram os processos cadastrados no ano de [2020](data)?
+    - Me liste processos do tipo [Auditoria Externa](tipo_processo)
+    - Tem processos registrados entre [15 de março de 2022](data) e [15 de abril de 2022](data)?
+    - Me traga os processos que aconteceram no ano de [2018](data)
+    - Quais processos do tipo [Planejamento Estratégico](tipo_processo) ocorreram em [2021](data)?
 
 
 - intent: pesquisar_documentos_interessados
   examples: |
-    - Busque todos documentos envolvendo o [Mineradora XYZ](nome_razaosocial)
-    - Busque todos os documentos envolvendo a [Empresa XYZ](nome_razaosocial)
-    - Pesquise todos os documentos do advogado [João](nome_razaosocial)
-    - Pesquise todos os documentos da advogada [Maria](nome_razaosocial)
-    - Faça uma busca de todos os documentos com os interessados [Empresa XYZ](nome_razaosocial)
-    - Faça uma busca de todos os documentos com os interessados [Pessoa XYZ](nome_razaosocial)
-    - Quais documentos da [Empresa ABC](nome_razaosocial) estão disponíveis?
-    - Mostre os documentos do advogado [Carlos Silva](nome_razaosocial)
-    - Existe algum documento arquivado por [Companhia Alpha](nome_razaosocial)?
-    - Liste documentos do interessado [Joana Pereira](nome_razaosocial)
+    - Liste todos os documentos relacionados ao interessado [Mineradora XYZ](nome_razaosocial)
+    - Busque documentos associados à [Empresa XYZ](nome_razaosocial)
+    - Pesquise os documentos do advogado [João](nome_razaosocial)
+    - Quais documentos da advogada [Maria](nome_razaosocial) estão disponíveis?
+    - Faça uma busca de documentos envolvendo o interessado [Empresa XYZ](nome_razaosocial)
+    - Quais documentos estão registrados para [Pessoa XYZ](nome_razaosocial)?
+    - Liste documentos referentes à [Empresa ABC](nome_razaosocial)
+    - Há documentos vinculados ao advogado [Carlos Silva](nome_razaosocial)?
+    - Existem documentos arquivados por [Companhia Alpha](nome_razaosocial)?
+    - Liste os documentos associados à interessada [Joana Pereira](nome_razaosocial)
+    - Quero ver os documentos do interessado [Companhia Beta](nome_razaosocial)
+    - Busque todos os documentos associados ao nome [Cláudio Almeida](nome_razaosocial)
+    - Quais documentos estão disponíveis para a empresa [Transportadora XYZ](nome_razaosocial)?
+    - Mostre os documentos vinculados à advogada [Ana Clara](nome_razaosocial)
+    - Faça uma pesquisa de documentos do advogado [Fernando Rocha](nome_razaosocial)
+    - Me traga os documentos arquivados por [Construtora ABC](nome_razaosocial)
+    - Quais documentos estão relacionados com o interessado [Jorge Silva](nome_razaosocial)?
+    - Busque todos os documentos da [Indústria Delta](nome_razaosocial)
+    - Existem documentos ligados ao advogado [Pedro Soares](nome_razaosocial)?
+    - Quero informações sobre documentos vinculados à empresa [Distribuidora Omega](nome_razaosocial)
+    - Há documentos registrados no nome de [Paula Oliveira](nome_razaosocial)?
+    - Quero ver todos os documentos do advogado [Rafael Santos](nome_razaosocial)
+    - Liste documentos registrados por [Transportes União](nome_razaosocial)
+    - Me mostre os documentos da empresa [Alimentos Pura Vida](nome_razaosocial)
+    - Faça uma busca pelos documentos relacionados ao interessado [Advogado Carlos Lima](nome_razaosocial)
+    - Busque documentos do interessado [Engenheira Camila Alves](nome_razaosocial)
+    - Quais documentos foram arquivados pela empresa [Construtora Real](nome_razaosocial)?
+    - Liste os documentos associados à companhia [Empreendimentos Sol Nascente](nome_razaosocial)
+    - Mostre os documentos registrados no nome de [André Santos](nome_razaosocial)
+    - Quero os documentos vinculados ao advogado [Ricardo Mendes](nome_razaosocial)
+  
 
 - intent: follow_up_query
   examples: |
     - Detalhe o processo 3
-    - Detalhe o terceiro processo
-    - Detalhe o segundo processo
-    - Quero saber mais sobre isso
+    - Quero mais informações sobre o terceiro processo
+    - Explique melhor o segundo processo
+    - Me diga mais sobre isso
     - E o segundo item?
-    - O que significa isso?
-    - Me diga mais sobre esse processo
-    - Quais detalhes você tem sobre esse item?
-    - Explique melhor o que é o processo 2
-    - Me traga informações adicionais
+    - Quais detalhes você tem sobre esse processo?
+    - Detalhe o processo [27201.810090/1991-04](numeroprocesso)
+    - O que significa o primeiro processo?
     - Pode detalhar isso?
-    - E o último item da lista?
-    - Como assim o primeiro processo?
-    - Detalhe o processo  27201.810090/1991-04
-    - Detalhe o primeiro processo
-    - Detalhe o documento do processo 27201.810090/1991-04
+    - O que consta no último item?
+    - Fale mais sobre o processo [12345/2022](numeroprocesso)
+    - Quero saber mais sobre o processo número [98765/2021](numeroprocesso)
+    - Me explique o que aconteceu no processo [27201.810090/1991-04](numeroprocesso)
+    - Quais são os detalhes do processo [54673.9052/2022](numeroprocesso)?
+    - Diga mais sobre o processo número [10234/2020](numeroprocesso)
+    - Pode me dar mais informações sobre o processo [87654.123/1999-01](numeroprocesso)?
+    - O que aconteceu no processo [12345/2021](numeroprocesso)?
+    - Quais são as informações sobre o processo [67890.543/2022](numeroprocesso)?
+    - Como está o andamento do processo [91011.112/2020](numeroprocesso)?
+    - Explique os detalhes do processo número [44210.233/2019](numeroprocesso)
+    - Pode me informar mais sobre o item número 5?
+    - Quero mais informações sobre o último item mencionado
+    - O que aconteceu no processo de número [11223/2023](numeroprocesso)?
+    - Detalhe o andamento do processo número [23344/2021](numeroprocesso)
+    - O que consta no processo [35467.890/2020](numeroprocesso)?
+    - Diga o que há de novo no processo [98765/2023](numeroprocesso)
+    - Me fale mais sobre o primeiro processo
+    - Qual a situação do processo [34567/2022](numeroprocesso)?
+    - Detalhe o processo que está no número [23456/2021](numeroprocesso)
+
 
 - intent: consultar_documento
   examples: |
-    - Busque todos os documentos do processo [48077.803153/2024-20](numeroprocesso)
-    - Busque todos os documentos do processo [48077.803153/2024-20] que ocorreram no dia [16/10/2000](data)
-    - Retorne todos os documentos que ocorreram nos anos de [2010-2020](data)
-    - Retorne todos os documentos que ocorreram nos anos de [2000 e 2010](data)
     - Liste os documentos do processo [48077.803153/2024-20](numeroprocesso)
-    - Preciso de todos os documentos do processo [12345.678910/2021-09](numeroprocesso)
-    - Quais documentos foram adicionados em [25/12/2020](data)?
-    - Me traga os documentos do processo [78910.111213/2023-15](numeroprocesso)
-    - Liste todos os documentos anexados entre [01/01/2021](data) e [01/01/2022](data)
+    - Traga documentos do processo [48077.803153/2024-20](numeroprocesso) registrados no dia [16/10/2000](data)
+    - Retorne documentos do período de [2010-2020](data)
+    - Documentos anexados entre [01/01/2021](data) e [01/01/2022](data)
     - Busque documentos do tipo [Parecer Técnico](tipo_documento) no processo [48077.803153/2024-20](numeroprocesso)
-
+    - Me mostre os documentos do processo [12345/2020](numeroprocesso)
+    - Quais documentos estão anexados ao processo [23456/2021](numeroprocesso)?
+    - Traga todos os documentos do processo [78910/2019](numeroprocesso)
+    - Liste os documentos do processo [11223/2023](numeroprocesso) que foram registrados entre [01/01/2022](data) e [31/12/2022](data)
+    - Quero os documentos do processo [98765/2022](numeroprocesso) registrados em [15/08/2021](data)
+    - Quais documentos estão disponíveis no processo [11111/2021](numeroprocesso)?
+    - Me traga os documentos do processo [22222/2022](numeroprocesso) referentes ao tipo [Laudo Pericial](tipo_documento)
+    - Busque os documentos anexados ao processo [33333/2020](numeroprocesso) entre [01/01/2022](data) e [01/06/2022](data)
+    - Mostre todos os documentos registrados no processo [44444/2023](numeroprocesso) no mês de [Janeiro de 2023](data)
+    - Liste os documentos relacionados ao processo [55555/2021](numeroprocesso) no ano de [2020](data)
+    - Traga os documentos do tipo [Relatório de Inspeção](tipo_documento) do processo [66666/2022](numeroprocesso)
+    - Quais documentos foram anexados no processo [77777/2020](numeroprocesso) no mês de [dezembro de 2021](data)?
+    - Me mostre os documentos vinculados ao processo [88888/2023](numeroprocesso) no intervalo entre [01/02/2023](data) e [01/05/2023](data)
+    - Traga todos os documentos do processo [99999/2022](numeroprocesso) do tipo [Petição Inicial](tipo_documento)
+    - Quais documentos do processo [10000/2022](numeroprocesso) foram cadastrados em [março de 2023](data)?
+    - Liste os documentos do processo [12345/2024](numeroprocesso) no ano de [2019](data)
+    - Busque os documentos relacionados ao processo [54321/2021](numeroprocesso) entre [10/03/2020](data) e [20/03/2020](data)
+    - Quais documentos do tipo [Certidão](tipo_documento) foram registrados no processo [54321/2020](numeroprocesso)?
+  
 - intent: consultar_documento_especifico
   examples: |
     - Quero saber mais sobre o documento número [3066009](numerodocumento)
@@ -123,13 +182,98 @@ nlu:
 
 - intent: pesquisar_procesos_interessados
   examples: |
-    - Busque todos processos envolvendo o [Mineradora XYZ](nome_razaosocial)
-    - Busque todos os processos envolvendo a [Empresa XYZ](nome_razaosocial)
-    - Pesquise todos os processos do advogado [João](nome_razaosocial)
-    - Faça uma busca de processos e documentos com os interessados [Empresa XYZ](nome_razaosocial)
-    - Faça uma busca de processos e documentos com os interessados [Pessoa XYZ](nome_razaosocial)
-    - Liste processos que envolvem [Maria](nome_razaosocial)
-    - Quero todos os processos relacionados à [Companhia ABC](nome_razaosocial)
-    - Pesquise os processos com o advogado [Carlos Silva](nome_razaosocial)
-    - Mostre processos da [Indústria Mineradora](nome_razaosocial)
-    - Há processos em nome da [Empresa Zeta](nome_razaosocial)?
+    - Liste processos associados ao interessado [Mineradora XYZ](nome_razaosocial)
+    - Pesquise processos vinculados à [Empresa XYZ](nome_razaosocial)
+    - Todos os processos do advogado [João](nome_razaosocial)
+    - Existe algum processo relacionado à interessada [Maria](nome_razaosocial)?
+    - Faça uma busca por processos da [Companhia ABC](nome_razaosocial)
+    - Há processos registrados para [Carlos Silva](nome_razaosocial)?
+    - Pesquise processos com o interessado [Indústria Mineradora](nome_razaosocial)
+    - Quais processos estão vinculados à [Transportadora Beta](nome_razaosocial)?
+    - Me mostre todos os processos envolvendo o nome [Joana Pereira](nome_razaosocial)
+    - Quais são os processos registrados para [Construtora Real](nome_razaosocial)?
+    - Existe algum processo da [Indústria X](nome_razaosocial)?
+    - Busque processos relacionados à empresa [Comércio de Alimentos XYZ](nome_razaosocial)
+    - Liste todos os processos envolvendo [Distribuidora Nova Era](nome_razaosocial)
+    - Me traga os processos do advogado [Ricardo Soares](nome_razaosocial)
+    - Quais processos estão registrados para [Construtora Delta](nome_razaosocial)?
+    - Pesquise todos os processos que envolvem [Empreendimentos Real](nome_razaosocial)
+    - Existe algum processo aberto para [Loja de Roupas Glamour](nome_razaosocial)?
+    - Me mostre os processos da [Companhia Internacional de Petróleo](nome_razaosocial)
+    - Busque processos relacionados ao advogado [Fábio Lima](nome_razaosocial)
+    - Quais processos existem para a [Indústria Química Paulista](nome_razaosocial)?
+    - Liste os processos da [Consultoria Green](nome_razaosocial)
+    - Quais processos estão associados ao nome [João Almeida](nome_razaosocial)?
+    - Me traga todos os processos relacionados ao interessado [TecnoSolutions](nome_razaosocial)
+    - Quais são os processos do advogado [Carla Mendes](nome_razaosocial)?
+    - Pesquise os processos da [Construtora Pioneira](nome_razaosocial)
+    - Busque os processos associados à empresa [Fábrica de Móveis Elegance](nome_razaosocial)
+    - Existe algum processo registrado no nome de [Luciana Fernandes](nome_razaosocial)?
+    - Quais processos envolvem a [Empresa de Transporte Rápido](nome_razaosocial)?
+    - Me mostre os processos relacionados ao [Banco Finança X](nome_razaosocial)
+    - Há processos envolvendo a [Indústria Metalúrgica Norte](nome_razaosocial)?
+    - Quais processos estão vinculados ao advogado [Eduardo Costa](nome_razaosocial)?
+
+
+- intent: selecionar_interessado
+  examples: |
+    - Todos
+    - Os primeiros
+    - Apenas 1
+    - Somente o segundo interessado
+    - Não
+    - Somente o primeiro
+    - Todos os itens
+    - Escolha o primeiro interessado
+    - Quero ver o último
+    - Somente o terceiro
+    - Me mostre todos
+    - Apenas o primeiro item
+    - Selecione o segundo interessado
+    - Me traga o último
+    - Quero só o terceiro
+    - Só o primeiro
+    - Só o último
+    - Me mostre os três primeiros
+    - Quais são os dois primeiros?
+    - Selecione o último interessado
+    - Só o segundo
+    - Quero ver só o primeiro
+    - Mostre apenas o último
+    - Me traga todos os itens
+    - Traga só o terceiro interessado
+    - Quero ver todos os itens listados
+    - Escolha o terceiro interessado
+    - Somente o último
+    - Traga o primeiro e o último
+    - Mostre apenas o segundo
+  
+
+- intent: maximo_resultados
+  examples: |
+    - Quero no máximo [5](result_max) resultados
+    - Mostrar até [10](result_max)
+    - Me traga apenas [3](result_max) itens
+    - Traga no máximo [15](result_max)
+    - Quero somente [7](result_max)
+    - Apenas [2](result_max)
+    - Limite de [20](result_max)
+    - Não mais que [6](result_max)
+    - No máximo [8](result_max)
+    - [12](result_max)
+    - Traga até [4](result_max)
+    - Quero no máximo [9](result_max) resultados
+    - Me mostre somente [5](result_max) itens
+    - Limite de [30](result_max)
+    - Quero só [11](result_max)
+    - Apenas [1](result_max) resultado
+    - Não mais que [25](result_max)
+    - Me traga no máximo [13](result_max)
+    - Quero ver até [18](result_max) resultados
+    - Me mostre no máximo [14](result_max)
+    - Quero apenas [9](result_max)
+    - Limitar a [16](result_max)
+    - Traga só [10](result_max)
+    - Quero no máximo [22](result_max) itens
+    - Apenas [19](result_max)
+  

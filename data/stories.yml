@@ -5,35 +5,50 @@ stories:
 - story: saudacao
   steps:
   - intent: saudacao
-  - action: action_set_entity_from_prompt
   - action: utter_saudacao
 
 - story: consultar_processos
   steps:
   - intent: consultar_processos
+  - action: action_set_actual_intent
+  - action: action_set_actual_userprompt
   - action: action_set_entity_from_prompt
-  - action: utter_BuscartodosDocumentos
   - action: action_search_supabase
 
 - story: consultar_documento
   steps:
   - intent: consultar_documento
+  - action: action_set_actual_intent
+  - action: action_set_actual_userprompt
   - action: action_set_entity_from_prompt
-  - action: utter_BuscartodosDocumentos 
   - action: action_search_supabase
 
 - story: pesquisar_procesos_interessados
   steps:
   - intent: pesquisar_procesos_interessados
+  - action: action_set_actual_userprompt
+  - action: action_set_actual_intent
+  - action: action_search_interested_supabase 
+  - intent: selecionar_interessado
+  - action: action_set_actual_userprompt
+  - action: utter_ask_for_max_result
+  - intent: maximo_resultados
   - action: action_set_entity_from_prompt
-  - action: utter_BuscartodosDocumentos
   - action: action_search_supabase
+
+
 
 - story: pesquisar_documentos_interessados
   steps:
   - intent: pesquisar_documentos_interessados
+  - action: action_set_actual_userprompt
+  - action: action_set_actual_intent
+  - action: action_search_interested_supabase
+  - intent: selecionar_interessado
+  - action: action_set_actual_userprompt
+  - action: utter_ask_for_max_result
+  - intent: maximo_resultados
   - action: action_set_entity_from_prompt
-  - action: utter_BuscartodosDocumentos
   - action: action_search_supabase
 
 - story: follow_up_query
@@ -44,5 +59,7 @@ stories:
 - story: consultar_documento_especifico
   steps: 
   - intent: consultar_documento_especifico
+  - action: action_set_actual_intent
+  - action: action_set_actual_userprompt
   - action: action_set_entity_from_prompt
   - action: action_search_supabase

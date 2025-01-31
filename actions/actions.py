@@ -7,7 +7,7 @@ from supabase import create_client, Client
 import requests
 import json
 from sentence_transformers import SentenceTransformer
-
+import re
 
 # Configurações do Supabase
 SUPABASE_URL = "https://oixmmanzunrtyymwhqny.supabase.co"
@@ -25,7 +25,8 @@ class SetEntityFromPrompt(Action):
     def name(self) -> Text:
         return "action_set_entity_from_prompt"
 
-    def choose_intent(self, prompt: Text, intent: Text, last_bot_message: Text, model: Text = "llama-3.3-70b-specdec") -> Dict:
+    def choose_intent(self, prompt: Text, intent: Text, last_bot_message: Text, model: Text = "llama-3.3-70b-versatile") -> Dict:
+        
         headers = {
             "Authorization": f"Bearer {self.GROQ_API_KEY}",
             "Content-Type": "application/json"
@@ -58,11 +59,12 @@ class SetEntityFromPrompt(Action):
                     "Additionally, if the context provided in the previous AI message contains relevant information, you must also extract parameters based on that context.\n\n"
                     "Example Input: 'List all cases related to Company A between 2020 and 2021.'\n"
                     "Example Output: {\"parameters\": {\"tipo_intencao\": \"consultar_documento\", \"nome_ou_razao_social\": [\"Company A\"], \"data_inicial\": \"2020-01-01\", \"data_final\": \"2021-12-31\", \"processos_identificados\": [], \"documentos_identificados\": [], \"max_resultados\": null, \"tipoDocumento\": [], \"tipoProcesso\": []}}."
+                    f"Intencao: {intent}"
                 ),
             },
             {
                 "role": "user",
-                "content": f"Context: {last_bot_message}, User prompt: {prompt}, Intent: {intent}"
+                "content": f"Context: {last_bot_message}, User prompt: {prompt}, Intencao: {intent}"
             }
         ]
 
@@ -95,21 +97,31 @@ class SetEntityFromPrompt(Action):
         domain: DomainDict,
     ) -> List[Dict[Text, Any]]:
         # Obtenha o prompt (última mensagem do usuário)
-        prompt = tracker.latest_message.get("text")
         
         # Obtenha o nome da intenção que disparou a ação
-        triggered_intent = tracker.latest_message.get("intent").get("name")
+        triggered_intent = tracker.get_slot("actual_intent")
+
+        """ prompt = tracker.latest_message.get("text") """
+        prompt = tracker.get_slot("user_prompt")
         
-        # Obtenha a última mensagem enviada pelo bot
-        last_bot_message = None
-        for event in reversed(tracker.events):
-            if event.get("event") == "bot":
-                last_bot_message = event.get("text")
-                break
-            
+        last_bot_response = tracker.get_slot("last_bot_response")
+        
+        actual_intent = tracker.get_slot("actual_intent")
+
+        result_max = tracker.get_slot("result_max")
+
+        try:
+            result_max = int(result_max) if result_max is not None else None
+        except ValueError:
+            result_max = None  # Caso não consiga converter, define como None
+
+        if result_max is not None and result_max >= 0:
+            prompt += f". Retorne no máximo: {result_max} objetos"
+        
+        """ return print(f"Intencao atual: {actual_intent} Prompt atual: {prompt}") """
         
         # Chama a função para obter os parâmetros com o tipo de intenção
-        api_response = self.choose_intent(prompt, triggered_intent, last_bot_message)
+        api_response = self.choose_intent(prompt, actual_intent, last_bot_response)
         
         
         if api_response:
@@ -134,6 +146,7 @@ class ActionSearchSupabase(Action):
         return slot_events        
     
     def generate_answer(self, query, response_data, intent):
+        
         context = ""
         if intent == "consultar_processos" or intent == "pesquisar_procesos_interessados":
             if response_data[0]['stats'].get('total', 0) > 20:
@@ -148,16 +161,47 @@ class ActionSearchSupabase(Action):
         elif intent == "consultar_documento" or intent == "pesquisa_processos_vetorial" or intent == "pesquisar_documentos_interessados":
             print("Pesquisa por documentos")
             for item in response_data:
+                processo = item.get('processo', '').strip()
+                conteudo = item.get('conteudo', '').strip()
+                tipo = item.get('tipo', '').strip()
+                documento = item.get('documento', '').strip()
+                
+                # Removendo os espaços extras e limpando o conteúdo
+                conteudo = ' '.join(conteudo.split())
+                
+                context += f"Documento número: {documento}\nProcesso: {processo}\nTipo: {tipo}\Descrição: {conteudo}...\n"
+
+        elif intent == "consultar_documento_especifico":
+            print("Pesquisa por documento específico")
+            context = ""
+
+            for item in response_data:
                 # Garantir que a informação do conteúdo seja referenciada corretamente
                 conteudo = item.get('conteudo', '').strip()
                 processo = item.get('processo', '').strip()
                 tipo = item.get('tipo', '').strip()
-                documento = item.get('documento', '').strip()
+                documento = item.get('documento_id', '').strip()  # Aqui ajustei para usar o 'documento_id'
+                
+                # Compactar o conteúdo para evitar quebras ou espaços desnecessários
                 conteudo = ' '.join(conteudo.split())
-                context += f"Processo: {processo}\nTipo: {tipo}\nDocumento: {documento}\nConteúdo:\n{conteudo}\n\n"
-        
+                
+                # Construindo a resposta formatada
+                context += (
+                    f"Processo: {processo}\n"
+                    f"Tipo: {tipo}\n"
+                    f"Documento ID: {documento}\n"
+                    f"Conteúdo:\n{conteudo}\n\n"
+                )
+                
         context_chunk = context.strip()[:10000]
 
+        if not context_chunk:
+            dispatcher.utter_message(text="Não encontrei dados para responder a sua pergunta, tente novamente.")
+            return
+
+        """ return print(context_chunk) """
+
+        """ return print(f"Chunk: {context_chunk} e {intent} ") """
         headers = {
             "Authorization": f"Bearer {self.GROQ_API_KEY}",
             "Content-Type": "application/json"
@@ -166,27 +210,16 @@ class ActionSearchSupabase(Action):
         messages = [
             {
                 "role": "system",
-                "content": (
-                    "You are an AI assistant developed by SansCode, specializing in queries related to mining processes from the SEI "
-                    "(Sistema Eletrônico de Informações) of the National Mining Agency (ANM). Your primary goal is to assist users in accessing, organizing, "
-                    "and structuring relevant information about mining processes. Users will ask questions in Portuguese, and you must always respond clearly, "
-                    "in detail, and in Portuguese."
-                    "Adapt your responses to the user's query context and the type of data provided, ensuring that your answers are meaningful and structured. "
-                    "When listing results, only display up to 10 relevant objects **if it makes sense for the user’s query**. If the query is more general or interpretive, "
-                    "focus on providing a summary or analysis that adds value to the search, avoiding unnecessary lists. If there are more than 10 objects, mention the total "
-                    "number of results found and suggest refining the query with filters such as process numbers, dates, or interested parties for greater precision."
-                    "When responding, highlight useful observations, such as patterns found in the data (e.g., distribution by category, dates, or frequency of occurrences), "
-                    "and present the information in MarkDown format for better organization and readability. Avoid using text sizes like `#` or `##`, but use lists, tables, and "
-                    "line breaks to structure the information clearly and accessibly."
-                    "Remember: your priority is to provide a relevant response to what the user asked. Analyze the context before listing objects or making observations, and do not "
-                    "list items unless the question clearly justifies doing so."
+                "content": ("You are an AI assistant specializing in queries related to mining processes from the SEI (Sistema Eletrônico de Informações) of the National Mining Agency (ANM)." " Your primary goal is to assist users in accessing, organizing, and structuring relevant information about mining processes." " Users will ask questions in Portuguese, and you must always respond clearly, in detail, and in Portuguese." "/n" "Ensure that your responses are tailored to the user's query context and the type of data provided, making them meaningful and structured." " Focus on delivering a summary or analysis that adds value to the search rather than listing raw data." "/n" "If the search returns more than 10 objects, indicate the total number of results found and suggest refining the query using filters such as process numbers, dates, or interested parties for greater precision." "/n" "Highlight key observations, such as patterns identified in the data (e.g., distribution by category, dates, or frequency of occurrences)." " Use MarkDown format to enhance organization and readability, employing lists, tables, and line breaks for a structured and accessible presentation." " However, avoid using heading sizes like # or ##." 
+                            "Whenever you list something, list it numbered and organized in a legible and professional way."
+                            "When generating statistics, always send a table code in pure HTML formatted in a table without line breaks ex: <table><thead><tr><th>Coluna 1</th><th>Coluna 2</th><th>Coluna 3</th></tr></thead><tbody><tr><td>Valor 1</td><td>Valor 2</td><td>Valor 3</td></tr><tr><td>Valor A</td><td>Valor B</td><td>Valor C</td></tr></tbody></table>"
+
                 )
-            },
+            },  
             {
                 "role": "user",
                 "content": (
-                    f"Context:\n{context_chunk}\nQuestion: {query}. Be direct and organize the information in MarkDown, but use lists or tables only if necessary and relevant "
-                    "to the query. Focus on addressing the user’s actual need with precise and clear answers."
+                    f"Context:\n{context_chunk}\nQuestion: {query}.s"
                 )
             }
         ]
@@ -194,7 +227,7 @@ class ActionSearchSupabase(Action):
 
 
         data = {
-            "model": "llama-3.3-70b-specdec",  # Defina o modelo aqui
+            "model": "llama-3.3-70b-versatile",  # Defina o modelo aqui
             "messages": messages,
             "max_tokens": 2000
         }
@@ -203,7 +236,7 @@ class ActionSearchSupabase(Action):
 
         if response.status_code == 200:
             formatted_response = response.json()['choices'][0]['message']['content']
-            return formatted_response.replace("\n", "/n/n")
+            return formatted_response.replace("\n", "/n")
         else:
             return f"Desculpe, não foi possível gerar uma resposta no momento. {response}"
 
@@ -227,7 +260,9 @@ class ActionSearchSupabase(Action):
         domain: DomainDict,
     ) -> List[Dict[Text, Any]]:
         # Captura os parâmetros dos slots
-        query_text = tracker.latest_message.get("text", "")
+        """ query_text = tracker.latest_message.get("text", "") """
+        query_text = tracker.get_slot("user_prompt")
+        
         parameters = tracker.get_slot("extracted_parameters")
         if not parameters:
             dispatcher.utter_message(text="Nenhum parâmetro foi encontrado para a consulta.")
@@ -285,13 +320,15 @@ class ActionSearchSupabase(Action):
                 "tipo_processo": tipo_processo if tipo_processo else None,  # Lista vazia
             }
         else:
+            print(f"Intencao: {intent} nao suportada")
             dispatcher.utter_message(text=f"Intenção '{intent}' não é suportada para esta ação.")
             return []
 
         # Chama a função RPC com os parâmetros preparados
         try:
             response = supabase.rpc(rpc_function, params).execute()
-            print(response.data)
+            
+            """ return print(response.data) """
             
             ia_response = self.generate_answer(query_text, response.data, intent)
             
@@ -310,3 +347,125 @@ class ActionSearchSupabase(Action):
 
         except Exception as e:
             return []
+
+class ActionSearchInterestedSupabase(Action):
+    def name(self) -> Text:
+        return "action_search_interested_supabase"
+
+    def extract_names(self, query: str) -> List[str]:
+        """
+        Extrai nomes ou razões sociais da query do usuário.
+        Captura:
+        - Palavras que começam com maiúsculas
+        - Nomes compostos com conectores (de, da, dos, etc)
+        - Razões sociais com designações empresariais (S.A., LTDA, etc)
+        - Caracteres acentuados
+        - Números e símbolos comuns em razões sociais
+        """
+        # Padrões de conectores e designações empresariais comuns
+        conectores = r'(?:e|de|da|do|das|dos|\')?'
+        designacoes = r'(?:\s+(?:S\.?A\.?|LTDA\.?|MEI|EIRELI|EPP|ME|& CIA\.?|COMP\.?))?'
+        
+        # Padrão principal para captura de nomes/razões sociais
+        padrao = fr'''
+            # Início do grupo de captura
+            (
+                # Primeira palavra começando com maiúscula
+                (?:[A-ZÀÁÂÃÉÊÍÓÔÕÚÇ][a-zàáâãéêíóôõúç]+)
+                # Possíveis palavras adicionais
+                (?:
+                    # Espaço ou hífen seguido de conector opcional
+                    (?:[\s-]+{conectores}\s*)?
+                    # Palavra adicional (maiúscula ou minúscula após conector)
+                    (?:[A-ZÀÁÂÃÉÊÍÓÔÕÚÇ][a-zàáâãéêíóôõúç]+)
+                )*
+                # Designação empresarial opcional
+                {designacoes}
+            )
+        '''
+        
+        # Encontra todas as correspondências usando o padrão
+        matches = re.finditer(padrao, query, re.VERBOSE)
+        names = [match.group(1).strip() for match in matches]
+        
+        # Se nenhum nome foi encontrado, tenta um padrão mais simples para nomes curtos
+        if not names:
+            simple_matches = re.findall(r'\b[A-ZÀÁÂÃÉÊÍÓÔÕÚÇ][a-zàáâãéêíóôõúç]+\b', query)
+            names.extend(simple_matches)
+        
+        return names
+
+    def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        # Captura a query do usuário
+        user_query = tracker.latest_message.get("text", "")
+        if not user_query:
+            dispatcher.utter_message(text="Não consegui entender sua consulta.")
+            return []
+
+        # Extrai nomes da query
+        nomes = self.extract_names(user_query)
+        if not nomes:
+            dispatcher.utter_message(text="Não consegui entender a sua pergunta.")
+            return []
+
+        # Chama a função Supabase com os nomes extraídos
+        try:
+            print(f"Nomes extraídos: {nomes}")  # Debug
+            response = supabase.rpc("pesquisar_razao_social", {"nomes_razao_social": nomes}).execute()
+    
+            if response.data:
+                # Formata os resultados para exibição numerando
+                result = "\n".join([f"{i+1}. {item}" for i, item in enumerate(response.data)])
+                dispatcher.utter_message(
+                    text=f"Encontrei os seguintes interessados:/n{result}/nQuais desses interessados você gostaria de saber mais informações?"
+                )
+            else:
+                dispatcher.utter_message(
+                    text="Nenhum resultado foi encontrado no banco de dados para os nomes fornecidos. Tente novamente"
+                )
+            
+            """ return [SlotSet("interessados", response.data or None)] """
+
+            return [SlotSet("last_bot_response", f"User last prompt: {user_query}, Response: Encontrei os seguintes interessados:\n{response.data},\nQuais desses interessados você gostaria de saber mais informações?" or "Nenhum resultado encontrado.")]
+
+        except Exception as e:
+            dispatcher.utter_message(text=f"Erro ao consultar a base de dados: {str(e)}")
+            return []
+
+class ActionSetActualIntent(Action):
+    def name(self) -> Text:
+        return "action_set_actual_intent"
+
+    def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        # Obtém o nome da intenção atual
+        triggered_intent = tracker.latest_message.get("intent").get("name")
+        
+        # Retorna um evento SlotSet para salvar o valor no slot actual_intent
+        return [SlotSet("actual_intent", triggered_intent)]
+    
+class ActionSetActualUserPrompt(Action):
+    def name(self) -> Text:
+        return "action_set_actual_userprompt"
+
+    def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> List[Dict[Text, Any]]:
+        # Obtem o ultimo prompt do usuario, disparado em stories onde a pergunta do usuário é importante para pesquisa
+        prompt = tracker.latest_message.get("text")
+
+        # Retorna um evento SlotSet para salvar o valor no slot actual_intent
+        return [SlotSet("user_prompt", prompt)]
+
