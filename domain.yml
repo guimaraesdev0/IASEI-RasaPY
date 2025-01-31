@@ -8,6 +8,8 @@ intents:
   - pesquisar_documentos_interessados
   - follow_up_query
   - consultar_documento_especifico
+  - selecionar_interessado
+  - maximo_resultados
 
 entities:
   - tipo_processo
@@ -17,12 +19,34 @@ entities:
   - custom_entity
   - triggered_intent
   - numerodocumento
+  - result_max
 
 actions:
   - action_set_entity_from_prompt
   - action_search_supabase
+  - action_search_interested_supabase
+  - action_set_actual_intent
+  - action_set_actual_userprompt
 
 slots:
+  result_max:
+    type: any
+    influence_conversation: false
+    mappings:
+    - type: from_entity
+      entity: result_max
+  user_prompt:
+    type: text
+    influence_conversation: false
+    mappings: []
+  actual_intent:
+    type: text
+    influence_conversation: false
+    mappings: []
+  interessados:
+    type: list
+    influence_conversation: true
+    mappings: []
   consulta_processo:
     type: list
     influence_conversation: false
@@ -37,6 +61,7 @@ slots:
     type: text
     influence_conversation: true
     mappings: []
+  
 
 responses:
   utter_saudacao:
@@ -49,7 +74,16 @@ responses:
   - text: "Realizando a consulta, aguarde um momento..."
 
   utter_BuscartodosDocumentos:
-  - text: "Buscando todos os documentos..."
+  - text: "Realizando pesquisa, aguarde..."
+
+  utter_repetir_interessado:
+  - text: "Não consegui identificar sua pergunta, poderia reformular?"
+
+  utter_ask_for_max_result:
+  - text: "Qual é o máximo de resultado deseja retornar?"
+
+  utter_debug_intent:
+  - text: "Debug: {interessados}"
 
   utter_null:
   - text: "Nulo ativado {last_bot_response}"
