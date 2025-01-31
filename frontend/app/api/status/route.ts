@@ -3,7 +3,7 @@ import WebSocket from "ws"; // Usando o WebSocket nativo do Node.js
 
 export async function GET() {
   return new Promise((resolve) => {
-    const socket = new WebSocket("ws://156.67.27.152:5005/socket.io/?EIO=4&transport=websocket");
+    const socket = new WebSocket("ws://iaseibackend.duckdns.org/socket.io/?EIO=4&transport=websocket");
 
     // Quando a conexão for estabelecida, o servidor está online
     socket.on("open", () => {
