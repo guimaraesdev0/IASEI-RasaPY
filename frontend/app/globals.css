@@ -12,6 +12,55 @@ body {
   }
 }
 
+
+
+/* Tabela com cores diferenciadas para o modo claro e escuro */
+table {
+  @apply w-full border-collapse my-4;
+}
+
+th, td {
+  @apply px-6 py-4 text-2xl border border-gray-300 dark:border-gray-600;
+}
+
+th {
+  @apply bg-gray-300 dark:bg-gray-900 text-left;
+}
+
+/* Primeira linha transparente e segunda linha cinza */
+tr:nth-child(odd) {
+  @apply bg-gray-200 dark:bg-gray-800; /* Linha par com fundo cinza */
+}
+
+tr:nth-child(even) {
+  @apply bg-gray-100 dark:bg-gray-700; /* Linha par com fundo cinza */
+}
+
+/* Sobrescrevendo para uma boa leitura no modo claro e escuro */
+tr:nth-child(odd):hover, tr:nth-child(even):hover {
+  @apply bg-gray-300 dark:bg-gray-600; /* Adiciona efeito de hover */
+}
+
+/* Ajustando a cor dos textos e cabeçalhos para garantir boa legibilidade */
+td, th {
+  @apply text-sm text-gray-900 dark:text-gray-100;
+}
+
+@layer components {
+  .markdown-table {
+    th, td {
+      @apply px-4 py-2 border border-gray-200 dark:border-gray-600;
+    }
+    
+    th {
+      @apply bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white;
+    }
+    
+    tr {
+      @apply even:bg-gray-50 dark:even:bg-gray-800/50;
+    }
+  }
+}
 @layer base {
   :root {
     --background: 0 0% 100%;

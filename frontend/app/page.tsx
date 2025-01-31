@@ -10,52 +10,81 @@ import Message from "./components/Message"
 import Header from "./components/Header"
 import TipBox from "./components/TipBox"
 import { ThemeToggle } from "@/components/theme-toggle"
-import io, { Socket } from "socket.io-client" // Certifique-se de importar o tipo Socket também
+import io, { Socket } from "socket.io-client"
+
+interface MessageType {
+  text: string
+  isUser: boolean
+  isLoading?: boolean
+}
 
 export default function Chat() {
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([])
+  const [socket, setSocket] = useState<Socket | null>(null)
+  const [messages, setMessages] = useState<MessageType[]>([])
   const [input, setInput] = useState("")
   const [isOnline, setIsOnline] = useState(false)
 
   useEffect(() => {
-    const socketConnection = io("http://localhost:5005"); // A URL do seu servidor Rasa
-    setSocket(socketConnection);
+    const socketConnection = io("http://localhost:5005")
+    setSocket(socketConnection)
 
     socketConnection.on("connect", () => {
-      console.log("Conectado ao servidor Rasa!");
-      setIsOnline(true);
-    });
+      console.log("Conectado ao servidor Rasa!")
+      setIsOnline(true)
+    })
 
     socketConnection.on("disconnect", () => {
-      console.log("Desconectado do servidor Rasa.");
-      setIsOnline(false);
-    });
+      console.log("Desconectado do servidor Rasa.")
+      setIsOnline(false)
+    })
 
     return () => {
       if (socketConnection) {
-        socketConnection.disconnect();
+        socketConnection.disconnect()
       }
-    };
-  }, []);
+    }
+  }, [])
 
   const sendMessage = () => {
     if (input.trim() === "" || !socket) return;
-
-    const newMessages = [...messages, { text: input, isUser: true }];
+  
+    // Processar quebras de linha e tabelas
+    const processedInput = input
+      .replace(/\\n/g, '') // Converter \n para quebras reais
+      .replace(/\|/g, ''); // Adicionar espaço após pipes
+  
+    const newMessages = [
+      ...messages,
+      { text: input, isUser: true },
+      { text: "´Processando...", isUser: false, isLoading: true }
+    ];
+    
     setMessages(newMessages);
     setInput("");
-
+  
     socket.emit("user_uttered", { message: input });
+  
+    const responseHandler = (data: any) => {
+      console.log("Mensagem recebida do Rasa:", data);
 
-    socket.on("bot_uttered", (data) => {
-      console.log("Mensagem recebida do bot:", data.text);
-
-      // Substitui '/n' por '\n' na mensagem recebida
-      const formattedText = data.text.replaceAll("/n", "\n");
-
-      setMessages([...newMessages, { text: formattedText, isUser: false }]);
-    });
+      
+      const formattedText = data.text
+        .replaceAll("/n", "\n")
+        .replace(/\|/g, '| ');
+  
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        const loadingIndex = newMessages.findIndex(msg => msg.isLoading);
+        if (loadingIndex !== -1) {
+          newMessages[loadingIndex] = { text: formattedText, isUser: false };
+        }
+        return newMessages;
+      });
+  
+      socket.off("bot_uttered", responseHandler);
+    };
+  
+    socket.on("bot_uttered", responseHandler);
   };
 
   return (
@@ -71,16 +100,21 @@ export default function Chat() {
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center">
                 <div className="grid grid-cols-2 gap-6 w-full max-w-4xl px-4">
-                <TipBox icon="💡" title="Pesquisa por Processos" description="Solicite à IA a pesquisa de processos específicos." />
-                <TipBox icon="🔍" title="Pesquisa por Interessados" description="A IA pode retornar todos os processos e documentos relacionados a um interessado." />
-                <TipBox icon="📊" title="Estatísticas" description="Solicite análises detalhadas de documentos e processos com base em dados estatísticos." />
-                <TipBox icon="📅" title="Pesquisa por Data" description="Realize pesquisas utilizando filtros de datas para processos e documentos." />
+                  <TipBox icon="💡" title="Pesquisa por Processos" description="Solicite à IA a pesquisa de processos específicos." />
+                  <TipBox icon="🔍" title="Pesquisa por Interessados" description="A IA pode retornar todos os processos e documentos relacionados a um interessado." />
+                  <TipBox icon="📊" title="Estatísticas" description="Solicite análises detalhadas de documentos e processos com base em dados estatísticos." />
+                  <TipBox icon="📅" title="Pesquisa por Data" description="Realize pesquisas utilizando filtros de datas para processos e documentos." />
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
                 {messages.map((message, index) => (
-                  <Message key={index} text={message.text} isUser={message.isUser} />
+                  <Message
+                    key={index}
+                    text={message.text}
+                    isUser={message.isUser}
+                    isLoading={message.isLoading}
+                  />
                 ))}
               </div>
             )}
@@ -102,4 +136,3 @@ export default function Chat() {
     </div>
   )
 }
-
