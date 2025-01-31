@@ -25,7 +25,7 @@ export default function Chat() {
   const [isOnline, setIsOnline] = useState(false)
 
   useEffect(() => {
-    const socketConnection = io("http://localhost:5005")
+    const socketConnection = io("http://156.67.27.152:5005")
     setSocket(socketConnection)
 
     socketConnection.on("connect", () => {
