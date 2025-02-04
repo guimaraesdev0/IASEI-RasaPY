@@ -96,7 +96,48 @@ nlu:
     - Liste os documentos associados à companhia [Empreendimentos Sol Nascente](nome_razaosocial)
     - Mostre os documentos registrados no nome de [André Santos](nome_razaosocial)
     - Quero os documentos vinculados ao advogado [Ricardo Mendes](nome_razaosocial)
-  
+    - Me mostra os documentos do [João](nome_razaosocial)  
+    - Tem algum documento da [Empresa XYZ](nome_razaosocial)?  
+    - Quero ver os docs da [Mineradora XYZ](nome_razaosocial)  
+    - Procura aí documentos da [Transportadora XYZ](nome_razaosocial)  
+    - Lista os documentos do advogado [Carlos Silva](nome_razaosocial)  
+    - Tem algo arquivado da [Companhia Alpha](nome_razaosocial)?  
+    - Ache os documentos da [Indústria Delta](nome_razaosocial) pra mim  
+    - Mostra tudo que tem sobre a [Distribuidora Omega](nome_razaosocial)  
+    - Quero ver documentos registrados pelo [Fernando Rocha](nome_razaosocial)  
+    - Dá uma olhada nos documentos da [Construtora ABC](nome_razaosocial)  
+    - Tem algum documento no nome da [Paula Oliveira](nome_razaosocial)?  
+    - Me traga os documentos da [Empreendimentos Sol Nascente](nome_razaosocial)  
+    - Pesquisa os arquivos do advogado [Pedro Soares](nome_razaosocial)  
+    - Vê se tem algo no nome de [Jorge Silva](nome_razaosocial)  
+    - Quero todos os documentos do [Rafael Santos](nome_razaosocial)  
+    - Me arruma os documentos da [Transportes União](nome_razaosocial)  
+    - Tem registro de documentos pra [Construtora Real](nome_razaosocial)?  
+    - A [Companhia Beta](nome_razaosocial) tem docs registrados?  
+    - Procura os arquivos do [Advogado Carlos Lima](nome_razaosocial)  
+    - Quero os docs da [Engenheira Camila Alves](nome_razaosocial)  
+    - Vê se tem documento arquivado pelo [Ricardo Mendes](nome_razaosocial)  
+    - Me diz o que tem de documento da [Alimentos Pura Vida](nome_razaosocial)  
+    - Pesquisa se tem documentos do [Cláudio Almeida](nome_razaosocial)  
+    - Mostra os arquivos da [Construtora Real](nome_razaosocial)  
+    - Acha os docs do [André Santos](nome_razaosocial) pra mim  
+    - Vê se tem documentos da [Empresa ABC](nome_razaosocial)  
+    - Puxa todos os registros da advogada [Maria](nome_razaosocial)  
+    - Quero saber se tem docs da [Joana Pereira](nome_razaosocial)  
+    - Me dá um retorno dos arquivos do advogado [Ricardo Mendes](nome_razaosocial)  
+    - Pesquisa se tem algo da [Transportadora XYZ](nome_razaosocial)  
+    - Acha os documentos do [Fernando Rocha](nome_razaosocial) aí  
+    - Mostra os registros da [Distribuidora Omega](nome_razaosocial)  
+    - Tem documentos da [Companhia Beta](nome_razaosocial)?  
+    - Quero um levantamento dos docs do [Pedro Soares](nome_razaosocial)  
+    - Procura documentos da [Construtora ABC](nome_razaosocial) pra mim  
+    - Dá uma olhada nos arquivos do [Carlos Lima](nome_razaosocial)  
+    - Me diz se tem documentos no nome do [Jorge Silva](nome_razaosocial)  
+    - Vê se há arquivos da [Empreendimentos Sol Nascente](nome_razaosocial)  
+    - Pega documentos da [Paula Oliveira](nome_razaosocial) pra mim  
+    - Tem algum documento assinado pela [Engenheira Camila Alves](nome_razaosocial)?  
+    - Quero um resumo dos docs registrados pela [Transportes União](nome_razaosocial)  
+
 
 - intent: follow_up_query
   examples: |
@@ -213,7 +254,75 @@ nlu:
     - Me mostre os processos relacionados ao [Banco Finança X](nome_razaosocial)
     - Há processos envolvendo a [Indústria Metalúrgica Norte](nome_razaosocial)?
     - Quais processos estão vinculados ao advogado [Eduardo Costa](nome_razaosocial)?
-
+    - Tem processo no nome do [João](nome_razaosocial)?  
+    - Mostra aí os processos da [Empresa XYZ](nome_razaosocial)  
+    - Achei processos do [Carlos](nome_razaosocial) pra mim  
+    - Quero ver se a [Construtora Real](nome_razaosocial) tem processo  
+    - Pesquisa processos de [Maria](nome_razaosocial) aí  
+    - Tem alguma treta envolvendo a [Indústria X](nome_razaosocial)?  
+    - Puxa os processos do advogado [Ricardo Soares](nome_razaosocial)  
+    - Me dá um resumo dos processos da [Transportadora Beta](nome_razaosocial)  
+    - Processos de [Joana Pereira](nome_razaosocial), tem?  
+    - Me lista processos da [Distribuidora Nova Era](nome_razaosocial)  
+    - Vê se a [Companhia Internacional de Petróleo](nome_razaosocial) tá encrencada  
+    - Encontra processos da [Indústria Metalúrgica Norte](nome_razaosocial)  
+    - Quero um levantamento dos processos do [Fábio Lima](nome_razaosocial)  
+    - Mostra tudo sobre processos da [Consultoria Green](nome_razaosocial)  
+    - Algum processo contra a [Construtora Delta](nome_razaosocial)?  
+    - Investiga processos da [Empreendimentos Real](nome_razaosocial)  
+    - O advogado [Eduardo Costa](nome_razaosocial) tem processos?  
+    - Lista rapidão processos do [Banco Finança X](nome_razaosocial)  
+    - A [Indústria Química Paulista](nome_razaosocial) tá metida em processo?  
+    - Encontre ações contra [Luciana Fernandes](nome_razaosocial)  
+    - Me traz processos contra [TecnoSolutions](nome_razaosocial)  
+    - Descobre se tem ação contra a [Fábrica de Móveis Elegance](nome_razaosocial)  
+    - Pega processos da [Loja de Roupas Glamour](nome_razaosocial)  
+    - Quero um resumo das ações da [Companhia ABC](nome_razaosocial)  
+    - Pesquisa processos da [Empresa de Transporte Rápido](nome_razaosocial)  
+    - Tem algo registrado pro advogado [Carla Mendes](nome_razaosocial)?  
+    - Vê se [Construtora Pioneira](nome_razaosocial) tem processos ativos  
+    - Qual é a treta jurídica da [Transportadora Beta](nome_razaosocial)?  
+    - Me dá uma lista com os processos de [Comércio de Alimentos XYZ](nome_razaosocial)  
+    - Acha alguma coisa sobre o [João Almeida](nome_razaosocial) nos processos  
+    - O advogado [Ricardo Soares](nome_razaosocial) tem bronca na justiça?  
+    - Vê se tem processo aberto contra a [Indústria X](nome_razaosocial)  
+    - Dá uma olhada nos processos da [Companhia Internacional de Petróleo](nome_razaosocial)  
+    - Lista os processos que envolvem [Maria](nome_razaosocial)  
+    - Verifica processos envolvendo a [Empresa XYZ](nome_razaosocial)  
+    - Pesquisa e me manda processos da [Construtora Real](nome_razaosocial)  
+    - Mostra as tretas legais da [Distribuidora Nova Era](nome_razaosocial)  
+    - Vê se a [TecnoSolutions](nome_razaosocial) tem processo ativo  
+    - Acha processos de [Carlos Silva](nome_razaosocial) e me avisa  
+    - Quero os registros de processos do advogado [Fábio Lima](nome_razaosocial)  
+    - Pega os dados dos processos da [Indústria Metalúrgica Norte](nome_razaosocial)  
+    - Verifica se há processos contra a [Empresa de Transporte Rápido](nome_razaosocial)  
+    - Procura nos registros processos do [Eduardo Costa](nome_razaosocial)  
+    - Pesquisa se tem algo contra a [Indústria Química Paulista](nome_razaosocial)  
+    - Preciso saber dos processos da [Consultoria Green](nome_razaosocial)  
+    - O [Banco Finança X](nome_razaosocial) tem ações rolando?  
+    - Vê se a [Construtora Delta](nome_razaosocial) tem treta na justiça  
+    - Procura se tem processo no nome do [João Almeida](nome_razaosocial)  
+    - Descobre se tem ações contra a [Indústria X](nome_razaosocial)  
+    - Lista aí os processos do [João](nome_razaosocial)  
+    - Quero ver os processos da [Empresa XYZ](nome_razaosocial)  
+    - Tem algum processo do advogado [Ricardo](nome_razaosocial)?  
+    - Me mostra os processos da [Transportadora Beta](nome_razaosocial)  
+    - Processos da [Indústria Química Paulista](nome_razaosocial), tem?  
+    - Quero saber os processos de [Maria](nome_razaosocial)  
+    - Me arruma os processos de [Carlos](nome_razaosocial)  
+    - Vê se tem processo de [Construtora Real](nome_razaosocial) aí  
+    - Mostra processos da [Companhia ABC](nome_razaosocial)  
+    - Procura aí processos de [Banco Finança X](nome_razaosocial)  
+    - Quero todos os processos da [Distribuidora Nova Era](nome_razaosocial)  
+    - Tem alguma ação da [Construtora Delta](nome_razaosocial)?  
+    - Pesquisa pra mim processos de [TecnoSolutions](nome_razaosocial)  
+    - Ache os processos do advogado [Fábio Lima](nome_razaosocial)  
+    - Vê se tem alguma coisa da [Fábrica de Móveis Elegance](nome_razaosocial)  
+    - Me diz quais processos estão no nome de [Luciana Fernandes](nome_razaosocial)  
+    - Acha os processos da [Consultoria Green](nome_razaosocial)  
+    - Quero saber se tem processos da [Empresa de Transporte Rápido](nome_razaosocial)  
+    - Me dá um retorno dos processos do [Eduardo Costa](nome_razaosocial)  
+    
 
 - intent: selecionar_interessado
   examples: |
