@@ -322,7 +322,7 @@ nlu:
     - Acha os processos da [Consultoria Green](nome_razaosocial)  
     - Quero saber se tem processos da [Empresa de Transporte Rápido](nome_razaosocial)  
     - Me dá um retorno dos processos do [Eduardo Costa](nome_razaosocial)  
-    
+  
 
 - intent: selecionar_interessado
   examples: |
