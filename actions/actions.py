@@ -348,6 +348,7 @@ class ActionSearchSupabase(Action):
         except Exception as e:
             return []
 
+
 class ActionSearchInterestedSupabase(Action):
     def name(self) -> Text:
         return "action_search_interested_supabase"
@@ -355,43 +356,52 @@ class ActionSearchInterestedSupabase(Action):
     def extract_names(self, query: str) -> List[str]:
         """
         Extrai nomes ou razões sociais da query do usuário.
+        Case-insensitive: aceita nomes em maiúsculas ou minúsculas.
         Captura:
-        - Palavras que começam com maiúsculas
+        - Palavras independente de capitalização
         - Nomes compostos com conectores (de, da, dos, etc)
         - Razões sociais com designações empresariais (S.A., LTDA, etc)
         - Caracteres acentuados
         - Números e símbolos comuns em razões sociais
         """
-        # Padrões de conectores e designações empresariais comuns
-        conectores = r'(?:e|de|da|do|das|dos|\')?'
-        designacoes = r'(?:\s+(?:S\.?A\.?|LTDA\.?|MEI|EIRELI|EPP|ME|& CIA\.?|COMP\.?))?'
+        # Lista de palavras para ignorar
+        ignore_words = {
+            'me', 'de', 'da', 'do', 'das', 'dos', 'e', 'pesquise', 'todos', 'os',
+            'processos', 'interessado', 'interessados', 'ltda', 'sa', 'mei', 
+            'eireli', 'epp', 'cia'
+        }
         
-        # Padrão principal para captura de nomes/razões sociais
-        padrao = fr'''
-            # Início do grupo de captura
-            (
-                # Primeira palavra começando com maiúscula
-                (?:[A-ZÀÁÂÃÉÊÍÓÔÕÚÇ][a-zàáâãéêíóôõúç]+)
-                # Possíveis palavras adicionais
-                (?:
-                    # Espaço ou hífen seguido de conector opcional
-                    (?:[\s-]+{conectores}\s*)?
-                    # Palavra adicional (maiúscula ou minúscula após conector)
-                    (?:[A-ZÀÁÂÃÉÊÍÓÔÕÚÇ][a-zàáâãéêíóôõúç]+)
-                )*
-                # Designação empresarial opcional
-                {designacoes}
-            )
-        '''
+        # Limpa e normaliza a query
+        words = query.lower().split()
+        potential_names = []
         
-        # Encontra todas as correspondências usando o padrão
-        matches = re.finditer(padrao, query, re.VERBOSE)
-        names = [match.group(1).strip() for match in matches]
+        # Primeiro passo: identifica sequências de palavras que podem ser nomes
+        i = 0
+        while i < len(words):
+            if words[i] not in ignore_words:
+                name_parts = []
+                while i < len(words) and words[i] not in ignore_words:
+                    name_parts.append(words[i])
+                    i += 1
+                if name_parts:
+                    potential_names.append(' '.join(name_parts))
+            i += 1
         
-        # Se nenhum nome foi encontrado, tenta um padrão mais simples para nomes curtos
-        if not names:
-            simple_matches = re.findall(r'\b[A-ZÀÁÂÃÉÊÍÓÔÕÚÇ][a-zàáâãéêíóôõúç]+\b', query)
-            names.extend(simple_matches)
+        # Se não encontrou nada, tenta extrair usando regex mais flexível
+        if not potential_names:
+            # Padrão para capturar palavras que não são stop words
+            pattern = r'\b[A-ZÀÁÂÃÉÊÍÓÔÕÚÇa-zàáâãéêíóôõúç][a-zàáâãéêíóôõúç]{2,}\b'
+            matches = re.findall(pattern, query, re.IGNORECASE)
+            potential_names = [
+                match for match in matches 
+                if match.lower() not in ignore_words
+            ]
+        
+        # Capitaliza os resultados
+        names = [
+            ' '.join(word.capitalize() for word in name.split())
+            for name in potential_names
+        ]
         
         return names
 
@@ -410,28 +420,46 @@ class ActionSearchInterestedSupabase(Action):
         # Extrai nomes da query
         nomes = self.extract_names(user_query)
         if not nomes:
-            dispatcher.utter_message(text="Não consegui entender a sua pergunta.")
+            dispatcher.utter_message(
+                text="Não consegui pesquisar os interessados, poderia reformular a sua pergunta?"
+            )
             return []
 
         # Chama a função Supabase com os nomes extraídos
         try:
             print(f"Nomes extraídos: {nomes}")  # Debug
-            response = supabase.rpc("pesquisar_razao_social", {"nomes_razao_social": nomes}).execute()
+            response = supabase.rpc(
+                "pesquisar_razao_social", 
+                {"nomes_razao_social": nomes}
+            ).execute()
     
             if response.data:
                 # Formata os resultados para exibição numerando
-                result = "\n".join([f"{i+1}. {item}" for i, item in enumerate(response.data)])
-                dispatcher.utter_message(
-                    text=f"Encontrei os seguintes interessados:/n{result}/nQuais desses interessados você gostaria de saber mais informações?"
+                result = "\n".join(
+                    f"{i+1}. {item}" 
+                    for i, item in enumerate(response.data)
                 )
+                message = (
+                    f"Encontrei os seguintes interessados:\n"
+                    f"{result}\n"
+                    f"Quais desses interessados você gostaria de saber mais informações?"
+                )
+                dispatcher.utter_message(text=message)
             else:
                 dispatcher.utter_message(
                     text="Nenhum resultado foi encontrado no banco de dados para os nomes fornecidos. Tente novamente"
                 )
-            
-            """ return [SlotSet("interessados", response.data or None)] """
 
-            return [SlotSet("last_bot_response", f"User last prompt: {user_query}, Response: Encontrei os seguintes interessados:\n{response.data},\nQuais desses interessados você gostaria de saber mais informações?" or "Nenhum resultado encontrado.")]
+            # Armazena a última resposta no slot
+            bot_response = (
+                f"User last prompt: {user_query}, "
+                f"Response: Encontrei os seguintes interessados:\n"
+                f"{response.data}\n"
+                f"Quais desses interessados você gostaria de saber mais informações?"
+                if response.data else "Nenhum resultado encontrado."
+            )
+            
+            return [SlotSet("last_bot_response", bot_response)]
 
         except Exception as e:
             dispatcher.utter_message(text=f"Erro ao consultar a base de dados: {str(e)}")
